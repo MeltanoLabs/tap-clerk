@@ -225,3 +225,41 @@ class UsersStream(ClerkStream):
             params["order_by"] = f'+{self.replication_key}'
         self.logger.info(f"QUERY PARAMS: {params}")
         return params
+
+class WaitlistEntriesStream(ClerkStream):
+    """Waitlist entries stream class."""
+    name = "waitlist"
+    path = "/waitlist_entries"
+    primary_keys: t.ClassVar[list[str]] = ["id"]
+    replication_key = None
+    schema = th.PropertiesList(
+        th.Property("object", th.StringType),
+        th.Property("id", th.StringType),
+        th.Property("email_address", th.StringType),
+        th.Property("status", th.StringType),
+        th.Property("created_at", th.IntegerType),
+        th.Property("updated_at", th.IntegerType),
+        th.Property("invitation", th.ObjectType(
+            th.Property("object", th.StringType),
+            th.Property("id", th.StringType),
+            th.Property("email_address", th.StringType),
+            th.Property("public_metadata", th.ObjectType(additional_properties=True)),
+            th.Property("revoked", th.BooleanType),
+            th.Property("status", th.StringType),
+            th.Property("url", th.StringType),
+            th.Property("expires_at", th.IntegerType),
+            th.Property("created_at", th.IntegerType),
+            th.Property("updated_at", th.IntegerType)
+        ))
+    ).to_dict()
+
+    def get_url_params(self, context: dict | None, next_page_token: t.Any | None) -> dict[str, t.Any]:
+        params: dict = {"limit": self.API_LIMIT_PAGE_SIZE}
+        if next_page_token:
+            params["offset"] = next_page_token
+        if self.replication_key:
+            params["order_by"] = f'+{self.replication_key}'
+        return params
+
+    def parse_response(self, response: requests.Response) -> t.Iterable[dict]:
+        yield from extract_jsonpath("$.data[*]", input=response.json())
