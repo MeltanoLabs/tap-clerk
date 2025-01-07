@@ -28,7 +28,7 @@ class ClerkStream(RESTStream):
 
     # Update this value if necessary or override `get_new_paginator`.
     next_page_token_jsonpath = "$.next_page"  # noqa: S105
-    API_LIMIT_PAGE_SIZE = 100
+    API_LIMIT_PAGE_SIZE = 500
 
     @property
     def url_base(self) -> str:
