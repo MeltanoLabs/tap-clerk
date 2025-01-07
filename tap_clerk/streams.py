@@ -36,9 +36,6 @@ class OrganizationsStream(ClerkStream):
         th.Property("updated_at", th.IntegerType),
     ).to_dict()
 
-    def parse_response(self, response: requests.Response) -> t.Iterable[dict]:
-        yield from extract_jsonpath("$.data[*]", input=response.json())
-
     def get_child_context(self, record: dict, context: t.Optional[dict]) -> dict:
         return { "organization_id": record["id"] }
 
@@ -84,8 +81,25 @@ class OrganizationMembershipStream(ClerkStream):
         th.Property("updated_at", th.IntegerType, description="Timestamp of when the membership was last updated")
     ).to_dict()
 
-    def parse_response(self, response: requests.Response) -> t.Iterable[dict]:
-        yield from extract_jsonpath("$.data[*]", input=response.json())
+class OrganizationInvitationsStream(ClerkStream):
+    """Organization invitations stream class."""
+    name = "organization_invitations"
+    path = "/organization_invitations"
+    primary_keys = ["id"]
+    replication_key = None
+    schema = th.PropertiesList(
+        th.Property("id", th.StringType, description="The unique identifier for the invitation"),
+        th.Property("object", th.StringType, description="Type of the object, should be 'organization_invitation'"),
+        th.Property("email_address", th.StringType, description="Email address of the invited user"),
+        th.Property("role", th.StringType, description="Role assigned to the invited user"),
+        th.Property("role_name", th.StringType, description="Name of the role assigned"),
+        th.Property("organization_id", th.StringType, description="ID of the organization"),
+        th.Property("status", th.StringType, description="Status of the invitation (pending, accepted, revoked)"),
+        th.Property("public_metadata", th.ObjectType(additional_properties=True), description="Public metadata"),
+        th.Property("private_metadata", th.ObjectType(additional_properties=True), description="Private metadata"),
+        th.Property("created_at", th.IntegerType, description="Timestamp of when the invitation was created"),
+        th.Property("updated_at", th.IntegerType, description="Timestamp of when the invitation was last updated")
+    ).to_dict()
 
 class UsersStream(ClerkStream):
     """Users stream class."""
@@ -252,14 +266,3 @@ class WaitlistEntriesStream(ClerkStream):
             th.Property("updated_at", th.IntegerType)
         ))
     ).to_dict()
-
-    def get_url_params(self, context: dict | None, next_page_token: t.Any | None) -> dict[str, t.Any]:
-        params: dict = {"limit": self.API_LIMIT_PAGE_SIZE}
-        if next_page_token:
-            params["offset"] = next_page_token
-        if self.replication_key:
-            params["order_by"] = f'+{self.replication_key}'
-        return params
-
-    def parse_response(self, response: requests.Response) -> t.Iterable[dict]:
-        yield from extract_jsonpath("$.data[*]", input=response.json())

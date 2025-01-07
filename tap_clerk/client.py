@@ -24,7 +24,7 @@ class ClerkStream(RESTStream):
     """Clerk stream class."""
 
     # Update this value if necessary or override `parse_response`.
-    records_jsonpath = "$[*]"
+    records_jsonpath = "$.data[*]"
 
     # Update this value if necessary or override `get_new_paginator`.
     next_page_token_jsonpath = "$.next_page"  # noqa: S105

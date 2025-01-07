@@ -24,6 +24,7 @@ class TapClerk(Tap):
             streams.OrganizationMembershipStream(self),
             streams.UsersStream(self),
             streams.WaitlistEntriesStream(self),
+            streams.OrganizationInvitationsStream(self),
         ]
 
 if __name__ == "__main__":
