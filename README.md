@@ -1,6 +1,7 @@
 # tap-clerk
 
-`tap-clerk` is a Singer tap for Clerk.
+`tap-clerk` is a Singer tap for Clerk. 
+Initial insipiration from [tap-clerk](https://github.com/KeragonHQ/tap-clerk) by KeragonHQ
 
 Built with the [Meltano Tap SDK](https://sdk.meltano.com) for Singer Taps.
 
