@@ -193,6 +193,8 @@ class UsersStream(ClerkStream):
         th.Property("two_factor_enabled", th.BooleanType),
         th.Property("totp_enabled", th.BooleanType),
         th.Property("backup_code_enabled", th.BooleanType),
+        th.Property("mfa_enabled_at", th.IntegerType),
+        th.Property("mfa_disabled_at", th.IntegerType),
         th.Property("external_accounts", th.ArrayType(th.ObjectType(additional_properties=True))),
         th.Property("saml_accounts", th.ArrayType(th.ObjectType(
             th.Property("id", th.StringType),
@@ -228,7 +230,9 @@ class UsersStream(ClerkStream):
         th.Property("created_at", th.IntegerType),
         th.Property("delete_self_enabled", th.BooleanType),
         th.Property("create_organization_enabled", th.BooleanType),
-        th.Property("last_active_at", th.IntegerType)
+        th.Property("create_organizations_limit", th.IntegerType),
+        th.Property("last_active_at", th.IntegerType),
+        th.Property("legal_accepted_at", th.IntegerType)
     ).to_dict()
 
     def get_url_params(self, context: dict | None, next_page_token: t.Any | None) -> dict[str, t.Any]:
