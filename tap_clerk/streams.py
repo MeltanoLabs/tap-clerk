@@ -107,6 +107,7 @@ class UsersStream(ClerkStream):
     path = "/users"
     primary_keys: t.ClassVar[list[str]] = ["id"]
     replication_key = None
+    records_jsonpath = "$[*]"
     schema = th.PropertiesList(
         th.Property("id", th.StringType, description="The unique identifier for a user"),
         th.Property("object", th.StringType),
